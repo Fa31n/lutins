@@ -95,6 +95,7 @@ const BASE_URL = ON_CLAUDE ? CLAUDE_URL : location.href.split("#")[0];
 
 const KEY = "lutins-state-v1";
 const app = document.getElementById("app");
+let organizing = false;
 let state = load() || { names: ["", "", "", "", ""], mode: null, pool: [], drawn: {} };
 
 /* ---------- utilitaires ---------- */
@@ -151,7 +152,8 @@ function render(){
   if (tok){ const d = decode(tok); if (d) return viewPersonal(d); }
   if (state.mode === "turns") return viewTurns();
   if (state.mode === "links") return viewLinks();
-  viewSetup();
+  if (organizing) return viewSetup();
+  viewEnterCode();
 }
 
 function viewSetup(){
@@ -170,8 +172,8 @@ function viewSetup(){
     <div class="err" id="err"></div>
     <button class="btn primary" id="goTurns">Tirer chacun son tour<small>Tout le monde est ensemble, on se passe le téléphone</small></button>
     <button class="btn ghost" id="goLinks">Envoyer un code secret à chacun<small>Chacun tire son lutin de chez soi</small></button>
-    <div class="back"><button class="link" id="haveCode">🔑 J’ai reçu un code secret</button></div>`;
-  document.getElementById("haveCode").onclick=viewEnterCode;
+    <div class="back"><button class="link" id="haveCode">← J’ai reçu un code secret</button></div>`;
+  document.getElementById("haveCode").onclick=()=>{ organizing=false; render(); };
   app.querySelectorAll("input[data-i]").forEach(inp=>inp.addEventListener("input",e=>{ state.names[+e.target.dataset.i]=e.target.value; save(); }));
   app.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{ state.names.splice(+b.dataset.del,1); save(); viewSetup(); }));
   document.getElementById("add").onclick=()=>{ state.names.push(""); save(); viewSetup(); app.querySelectorAll("input[data-i]")[state.names.length-1].focus(); };
@@ -305,13 +307,14 @@ function viewLinks(){
 /* --- Saisie du code reçu --- */
 function viewEnterCode(){
   app.innerHTML = `
-    <h2>Ton code secret</h2>
-    <p class="sub">Colle ici le code (ou le message entier) que tu as reçu.</p>
+    <div class="hat">🎅</div>
+    <h2 class="center">Tire ton lutin secret</h2>
+    <p class="sub center">Colle ici le code (ou le message entier) que tu as reçu.</p>
     <div class="row"><input type="text" id="code" placeholder="ex. l10cf50012e6…" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
     <div class="err" id="err"></div>
     <button class="btn primary" id="ok">Ouvrir mon bonnet</button>
-    <div class="back"><button class="link" id="back">Retour</button></div>`;
-  const inp = document.getElementById("code"); inp.focus();
+    <div class="back"><button class="link" id="back">Organiser un tirage</button></div>`;
+  const inp = document.getElementById("code");
   const go = ()=>{
     const m = inp.value.toLowerCase().match(/l(?:[0-9a-f]{2}){4,}/);
     const d = m && decode(m[0]);
@@ -320,7 +323,7 @@ function viewEnterCode(){
   };
   document.getElementById("ok").onclick = go;
   inp.addEventListener("keydown", e=>{ if (e.key==="Enter") go(); });
-  document.getElementById("back").onclick = render;
+  document.getElementById("back").onclick = ()=>{ organizing=true; render(); };
 }
 
 /* --- Vue d'une personne qui ouvre son lien --- */
@@ -349,7 +352,7 @@ function bindReset(){
     parent.innerHTML = `<div class="note warn">Effacer le tirage en cours ? Les prénoms seront gardés.${state.mode==="links"?" Les codes déjà envoyés correspondent à l’ancien tirage : il faudra renvoyer les nouveaux.":""}</div>
       <button class="btn primary" id="yesReset">Oui, recommencer</button>
       <button class="btn ghost" id="noReset">Annuler</button>`;
-    document.getElementById("yesReset").onclick=()=>{ state.mode=null; state.pool=[]; state.drawn={}; delete state.links; save(); render(); };
+    document.getElementById("yesReset").onclick=()=>{ state.mode=null; state.pool=[]; state.drawn={}; delete state.links; save(); organizing=true; render(); };
     document.getElementById("noReset").onclick=render;
   };
 }
