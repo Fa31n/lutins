@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tirage des lutins secrets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f2a22; --bg2:#143629; --card:#fbf6ec; --ink:#1d2a24; --muted:#6b7a72;
+    --red:#c8372d; --red-d:#a52a22; --gold:#e3b04b; --line:#e6dccb;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    font-family:Inter,system-ui,sans-serif;color:var(--ink);
+    background:radial-gradient(circle at 20% 0%,#1d4a39 0,transparent 55%),
+               radial-gradient(circle at 90% 100%,#1a3f31 0,transparent 50%),var(--bg);
+    min-height:100vh;display:flex;justify-content:center;padding:32px 16px 48px;
+  }
+  .snow{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+  .snow i{position:absolute;top:-10px;width:6px;height:6px;border-radius:50%;background:#fff;opacity:.5;animation:fall linear infinite}
+  @keyframes fall{to{transform:translateY(105vh)}}
+  .wrap{width:100%;max-width:460px;position:relative;z-index:1}
+  header{text-align:center;color:#f4ecd8;margin-bottom:22px}
+  header h1{font-family:Fraunces,serif;font-weight:700;font-size:32px;margin:6px 0 4px;letter-spacing:-.01em}
+  header p{margin:0;color:#b9cbbf;font-size:14px}
+  .star{font-size:26px}
+  .card{background:var(--card);border-radius:20px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+  h2{font-family:Fraunces,serif;font-size:21px;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 18px;line-height:1.45}
+  label.small{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px}
+  .names{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+  .row{display:flex;gap:8px}
+  input[type=text]{flex:1;font:inherit;font-size:16px;padding:11px 13px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none}
+  input[type=text]:focus{border-color:var(--gold)}
+  .icon-btn{width:44px;border:1.5px solid var(--line);background:#fff;border-radius:12px;font-size:18px;color:var(--muted);cursor:pointer}
+  .icon-btn:hover{color:var(--red);border-color:var(--red)}
+  .link{background:none;border:none;color:var(--red);font:inherit;font-weight:600;font-size:14px;cursor:pointer;padding:6px 0}
+  .btn{display:block;width:100%;font:inherit;font-weight:600;font-size:16px;padding:14px 16px;border-radius:14px;border:none;cursor:pointer;transition:transform .08s,background .15s}
+  .btn:active{transform:scale(.98)}
+  .btn.primary{background:var(--red);color:#fff}
+  .btn.primary:hover{background:var(--red-d)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--ink)}
+  .btn + .btn{margin-top:10px}
+  .btn small{display:block;font-weight:400;font-size:12.5px;opacity:.8;margin-top:2px}
+  .err{color:var(--red);font-size:13.5px;min-height:18px;margin:4px 0 12px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .chip{font:inherit;font-size:15px;font-weight:500;padding:10px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;cursor:pointer;color:var(--ink)}
+  .chip:hover{border-color:var(--red);color:var(--red)}
+  .chip.done{opacity:.45;text-decoration:line-through;cursor:default;pointer-events:none}
+  .progress{font-size:13px;color:var(--muted);margin-bottom:14px}
+  .hat{font-size:84px;text-align:center;margin:8px 0 6px;user-select:none}
+  .hat.shake{animation:shake .5s ease-in-out 3}
+  @keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+  .reveal{text-align:center;padding:10px 0 4px}
+  .reveal .to{font-size:14px;color:var(--muted)}
+  .reveal .name{font-family:Fraunces,serif;font-weight:700;font-size:44px;color:var(--red);margin:6px 0 4px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+  @keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+  .note{background:#f3ead7;border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45;margin:14px 0}
+  .note.warn{background:#fbe5e1;color:#7a2018}
+  .center{text-align:center}
+  .list{list-style:none;padding:0;margin:0 0 16px}
+  .list li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .list li:last-child{border-bottom:none}
+  .list .who{font-weight:600}
+  .copy{font:inherit;font-size:13.5px;font-weight:600;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:#fff;cursor:pointer;white-space:nowrap}
+  .copy.ok{background:#2f6b4f;color:#fff;border-color:#2f6b4f}
+  textarea.fallback{width:100%;font:inherit;font-size:12.5px;margin-top:6px;border-radius:8px;border:1px solid var(--line);padding:6px}
+  .back{margin-top:16px;text-align:center}
+  footer{color:#8fa79a;text-align:center;font-size:12px;margin-top:18px}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+<div class="snow" id="snow"></div>
+<div class="wrap">
+  <header>
+    <div class="star">🎄</div>
+    <h1>Lutins secrets</h1>
+    <p>Le tirage au sort des cadeaux de Noël</p>
+  </header>
+  <main class="card" id="app"></main>
+  <footer>Chaque prénom n’est tiré qu’une fois · Si tu tires ton propre nom, il retourne dans le bonnet</footer>
+</div>
+
+<script>
+/* Lien de base de la page (rempli après publication) */
+const CLAUDE_URL = "https://claude.ai/artifact/F24iWWEk1Pt9XLSz5Uhj7W";
+/* Hébergée ailleurs (Netlify, GitHub Pages…), la page utilise sa propre adresse et les liens directs fonctionnent. */
+const ON_CLAUDE = /claude/i.test(location.hostname) || location.protocol === "file:";
+const BASE_URL = ON_CLAUDE ? CLAUDE_URL : location.href.split("#")[0];
+
+const KEY = "lutins-state-v1";
+const app = document.getElementById("app");
+let state = load() || { names: ["", "", "", "", ""], mode: null, pool: [], drawn: {} };
+
+/* ---------- utilitaires ---------- */
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function rnd(arr){ const a=new Uint32Array(1); crypto.getRandomValues(a); return arr[a[0]%arr.length]; }
+function cleanNames(){ return state.names.map(n=>n.trim()).filter(Boolean); }
+
+/* Noms pouvant être tirés par `giver` sans bloquer la suite :
+   si, après ce tirage, il ne restait qu'une personne et que seul son propre nom
+   était encore dans le bonnet, le tirage serait impossible — on l'évite. */
+function safeCandidates(giver, pool, drawersLeft){
+  if (drawersLeft.length !== 2) return pool.slice();
+  const other = drawersLeft.find(d => d !== giver);
+  return pool.filter(n => !(pool.length === 2 && pool.filter(x=>x!==n)[0] === other));
+}
+
+/* Tirage complet (pour le mode à distance), en suivant exactement la même règle */
+function fullDraw(names){
+  let pool = names.slice(), left = names.slice(), out = {};
+  for (const giver of names){
+    let pick;
+    do { pick = rnd(safeCandidates(giver, pool, left)); } while (pick === giver);
+    out[giver] = pick;
+    pool.splice(pool.indexOf(pick),1);
+    left.splice(left.indexOf(giver),1);
+  }
+  return out;
+}
+
+/* Jeton secret : "donneur|receveur" brouillé puis en hexadécimal (lettres et chiffres seulement) */
+const SALT = [0x5a,0x13,0xc7,0x2e,0x91,0x48,0xb3,0x6f];
+function encode(giver, receiver){
+  const bytes = new TextEncoder().encode(giver + "|" + receiver);
+  let h = "l";
+  bytes.forEach((b,i)=>{ h += ((b ^ SALT[i%SALT.length] ^ (i*31 & 255)) & 255).toString(16).padStart(2,"0"); });
+  return h;
+}
+function decode(tok){
+  if (!/^l([0-9a-f]{2})+$/.test(tok)) return null;
+  const hex = tok.slice(1), bytes = new Uint8Array(hex.length/2);
+  for (let i=0;i<bytes.length;i++) bytes[i] = (parseInt(hex.substr(i*2,2),16) ^ SALT[i%SALT.length] ^ (i*31 & 255)) & 255;
+  try{
+    const s = new TextDecoder("utf-8",{fatal:true}).decode(bytes);
+    const parts = s.split("|");
+    return parts.length === 2 && parts[0] && parts[1] ? { giver: parts[0], receiver: parts[1] } : null;
+  }catch(e){ return null; }
+}
+
+/* ---------- écrans ---------- */
+function render(){
+  const tok = location.hash.slice(1);
+  if (tok){ const d = decode(tok); if (d) return viewPersonal(d); }
+  if (state.mode === "turns") return viewTurns();
+  if (state.mode === "links") return viewLinks();
+  viewSetup();
+}
+
+function viewSetup(){
+  app.innerHTML = `
+    <h2>Qui participe ?</h2>
+    <p class="sub">Entre les prénoms, puis choisis comment faire le tirage.</p>
+    <label class="small">Participant·es</label>
+    <div class="names" id="names">
+      ${state.names.map((n,i)=>`
+        <div class="row">
+          <input type="text" value="${esc(n)}" data-i="${i}" placeholder="Prénom ${i+1}" autocomplete="off">
+          ${state.names.length>3?`<button class="icon-btn" data-del="${i}" aria-label="Retirer">×</button>`:""}
+        </div>`).join("")}
+    </div>
+    <button class="link" id="add">+ Ajouter une personne</button>
+    <div class="err" id="err"></div>
+    <button class="btn primary" id="goTurns">Tirer chacun son tour<small>Tout le monde est ensemble, on se passe le téléphone</small></button>
+    <button class="btn ghost" id="goLinks">Envoyer un code secret à chacun<small>Chacun tire son lutin de chez soi</small></button>
+    <div class="back"><button class="link" id="haveCode">🔑 J’ai reçu un code secret</button></div>`;
+  document.getElementById("haveCode").onclick=viewEnterCode;
+  app.querySelectorAll("input[data-i]").forEach(inp=>inp.addEventListener("input",e=>{ state.names[+e.target.dataset.i]=e.target.value; save(); }));
+  app.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{ state.names.splice(+b.dataset.del,1); save(); viewSetup(); }));
+  document.getElementById("add").onclick=()=>{ state.names.push(""); save(); viewSetup(); app.querySelectorAll("input[data-i]")[state.names.length-1].focus(); };
+  document.getElementById("goTurns").onclick=()=>start("turns");
+  document.getElementById("goLinks").onclick=()=>start("links");
+}
+
+function start(mode){
+  const names = cleanNames(), err = document.getElementById("err");
+  if (names.length < 3) return err.textContent = "Il faut au moins 3 personnes.";
+  const lower = names.map(n=>n.toLowerCase());
+  if (new Set(lower).size !== names.length) return err.textContent = "Deux personnes ont le même prénom : ajoute une initiale pour les distinguer.";
+  if (names.some(n=>n.includes("|"))) return err.textContent = "Le caractère « | » n’est pas accepté dans les prénoms.";
+  state.names = names;
+  state.mode = mode;
+  if (mode === "turns"){ state.pool = names.slice(); state.drawn = {}; }
+  if (mode === "links"){ state.links = fullDraw(names); }
+  save(); render();
+}
+
+/* --- Mode tour par tour --- */
+function viewTurns(){
+  const left = state.names.filter(n=>!(n in state.drawn));
+  if (!left.length) return viewTurnsDone();
+  app.innerHTML = `
+    <h2>Qui tire maintenant ?</h2>
+    <p class="sub">Touche ton prénom, puis tire un nom dans le bonnet — sans que les autres regardent l’écran.</p>
+    <div class="progress">${Object.keys(state.drawn).length} / ${state.names.length} ont déjà tiré</div>
+    <div class="chips">
+      ${state.names.map(n=>`<button class="chip ${n in state.drawn?"done":""}" data-n="${esc(n)}">${esc(n)}</button>`).join("")}
+    </div>
+    <div class="back"><button class="link" id="reset">Recommencer le tirage</button></div>`;
+  app.querySelectorAll(".chip:not(.done)").forEach(c=>c.onclick=()=>viewDraw(c.dataset.n));
+  bindReset();
+}
+
+function viewDraw(giver){
+  app.innerHTML = `
+    <h2>À toi, ${esc(giver)} !</h2>
+    <p class="sub">Il reste ${state.pool.length} nom${state.pool.length>1?"s":""} dans le bonnet.</p>
+    <div class="hat" id="hat">🎅</div>
+    <div id="zone">
+      <button class="btn primary" id="draw">Plonger la main dans le bonnet</button>
+      <button class="btn ghost" id="cancel">Ce n’est pas moi</button>
+    </div>`;
+  document.getElementById("cancel").onclick=viewTurns;
+  document.getElementById("draw").onclick=()=>doDraw(giver);
+}
+
+function doDraw(giver){
+  const hat = document.getElementById("hat"), zone = document.getElementById("zone");
+  zone.innerHTML = `<p class="center sub">On mélange…</p>`;
+  hat.classList.add("shake");
+  setTimeout(()=>{
+    hat.classList.remove("shake");
+    const left = state.names.filter(n=>!(n in state.drawn));
+    const pick = rnd(safeCandidates(giver, state.pool, left));
+    if (pick === giver){
+      hat.textContent = "🙃";
+      zone.innerHTML = `
+        <div class="note warn"><strong>Oups, c’est ton propre nom !</strong><br>On le remet dans le bonnet et tu tires à nouveau.</div>
+        <button class="btn primary" id="again">Retirer un nom</button>`;
+      document.getElementById("again").onclick=()=>{ hat.textContent="🎅"; doDraw(giver); };
+      return;
+    }
+    state.pool.splice(state.pool.indexOf(pick),1);
+    state.drawn[giver] = pick;
+    save();
+    hat.textContent = "🎁";
+    zone.innerHTML = `
+      <div class="reveal"><div class="to">Tu offres un cadeau à</div><div class="name">${esc(pick)}</div></div>
+      <div class="note">Retiens bien ce prénom : il ne sera plus affiché après.</div>
+      <button class="btn primary" id="hide">C’est noté, je cache et je passe</button>`;
+    document.getElementById("hide").onclick=viewTurns;
+  }, 1500);
+}
+
+function viewTurnsDone(){
+  app.innerHTML = `
+    <div class="hat">🎁</div>
+    <h2 class="center">Tout le monde a son lutin !</h2>
+    <p class="sub center">Le tirage est terminé. Joyeux Noël 🎄</p>
+    <div id="revealZone"><button class="btn ghost" id="showAll">Révéler tous les tirages (après Noël)</button></div>
+    <div class="back"><button class="link" id="reset">Nouveau tirage</button></div>`;
+  document.getElementById("showAll").onclick=()=>{
+    const z = document.getElementById("revealZone");
+    z.innerHTML = `<div class="note warn">Sûr·e ? Tout le monde verra qui offre à qui.</div>
+      <button class="btn primary" id="yes">Oui, tout révéler</button>`;
+    document.getElementById("yes").onclick=()=>{
+      z.innerHTML = `<ul class="list">${state.names.map(n=>`<li><span class="who">${esc(n)}</span><span>→ ${esc(state.drawn[n])}</span></li>`).join("")}</ul>`;
+    };
+  };
+  bindReset();
+}
+
+/* --- Mode liens secrets --- */
+function linkFor(name){
+  const base = BASE_URL || location.href.split("#")[0];
+  return base + "#" + encode(name, state.links[name]);
+}
+function viewLinks(){
+  app.innerHTML = `
+    <h2>Les codes secrets</h2>
+    <p class="sub">Le tirage est fait. Copie le message de chaque personne et envoie-le-lui (SMS, WhatsApp…). Il contient le lien de la page et <strong>son</strong> code : en le collant, elle tire son lutin et ne voit que le sien.</p>
+    <ul class="list">
+      ${state.names.map(n=>`<li><span class="who">${esc(n)}</span><button class="copy" data-n="${esc(n)}">Copier son message</button></li>`).join("")}
+    </ul>
+    <div class="note">Pour garder la surprise, ne colle pas les codes des autres. Ton propre code est dans la liste aussi.</div>
+    <div class="back"><button class="link" id="reset">Refaire un nouveau tirage</button></div>`;
+  app.querySelectorAll(".copy").forEach(b=>b.onclick=async()=>{
+    const code = encode(b.dataset.n, state.links[b.dataset.n]);
+    const msg = ON_CLAUDE
+      ? `🎄 Lutins secrets — ${b.dataset.n}, voici comment tirer ton lutin :\n1. Ouvre ${BASE_URL}\n2. Touche « J’ai reçu un code secret »\n3. Colle ce code : ${code}`
+      : `🎄 Lutins secrets — ${b.dataset.n}, ouvre ce lien pour tirer ton lutin : ${BASE_URL}#${code}\n(Si le lien ne s’ouvre pas bien : va sur ${BASE_URL}, touche « J’ai reçu un code secret » et colle ${code})`;
+    try{
+      await navigator.clipboard.writeText(msg);
+      b.textContent = "Copié ✓"; b.classList.add("ok");
+      setTimeout(()=>{ b.textContent="Copier son message"; b.classList.remove("ok"); }, 2000);
+    }catch(e){
+      const li = b.closest("li");
+      if (!li.nextElementSibling || !li.nextElementSibling.classList.contains("fb")){
+        const ta = document.createElement("li"); ta.className="fb";
+        ta.innerHTML = `<textarea class="fallback" rows="3" readonly>${esc(msg)}</textarea>`;
+        li.after(ta); ta.querySelector("textarea").select();
+      }
+    }
+  });
+  bindReset();
+}
+
+/* --- Saisie du code reçu --- */
+function viewEnterCode(){
+  app.innerHTML = `
+    <h2>Ton code secret</h2>
+    <p class="sub">Colle ici le code (ou le message entier) que tu as reçu.</p>
+    <div class="row"><input type="text" id="code" placeholder="ex. l10cf50012e6…" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="err" id="err"></div>
+    <button class="btn primary" id="ok">Ouvrir mon bonnet</button>
+    <div class="back"><button class="link" id="back">Retour</button></div>`;
+  const inp = document.getElementById("code"); inp.focus();
+  const go = ()=>{
+    const m = inp.value.toLowerCase().match(/l(?:[0-9a-f]{2}){4,}/);
+    const d = m && decode(m[0]);
+    if (!d) return document.getElementById("err").textContent = "Ce code n’est pas reconnu. Vérifie qu’il est complet.";
+    viewPersonal(d);
+  };
+  document.getElementById("ok").onclick = go;
+  inp.addEventListener("keydown", e=>{ if (e.key==="Enter") go(); });
+  document.getElementById("back").onclick = render;
+}
+
+/* --- Vue d'une personne qui ouvre son lien --- */
+function viewPersonal({giver, receiver}){
+  app.innerHTML = `
+    <h2>Bonjour ${esc(giver)} !</h2>
+    <p class="sub">Le bonnet t’attend. Tire ton lutin secret — et garde-le pour toi 🤫</p>
+    <div class="hat" id="hat">🎅</div>
+    <div id="zone"><button class="btn primary" id="draw">Plonger la main dans le bonnet</button></div>`;
+  document.getElementById("draw").onclick=()=>{
+    const hat = document.getElementById("hat"), zone = document.getElementById("zone");
+    zone.innerHTML = `<p class="center sub">On mélange…</p>`;
+    hat.classList.add("shake");
+    setTimeout(()=>{
+      hat.classList.remove("shake"); hat.textContent="🎁";
+      zone.innerHTML = `<div class="reveal"><div class="to">Tu offres un cadeau à</div><div class="name">${esc(receiver)}</div></div>
+        <div class="note">Chut ! Personne d’autre ne connaît ton tirage.</div>`;
+    }, 1500);
+  };
+}
+
+function bindReset(){
+  const r = document.getElementById("reset"); if (!r) return;
+  r.onclick=()=>{
+    const parent = r.parentElement;
+    parent.innerHTML = `<div class="note warn">Effacer le tirage en cours ? Les prénoms seront gardés.${state.mode==="links"?" Les codes déjà envoyés correspondent à l’ancien tirage : il faudra renvoyer les nouveaux.":""}</div>
+      <button class="btn primary" id="yesReset">Oui, recommencer</button>
+      <button class="btn ghost" id="noReset">Annuler</button>`;
+    document.getElementById("yesReset").onclick=()=>{ state.mode=null; state.pool=[]; state.drawn={}; delete state.links; save(); render(); };
+    document.getElementById("noReset").onclick=render;
+  };
+}
+
+/* neige */
+(function(){ const s=document.getElementById("snow"); for(let i=0;i<40;i++){ const f=document.createElement("i");
+  f.style.left=Math.random()*100+"%"; f.style.animationDuration=(6+Math.random()*10)+"s"; f.style.animationDelay=(-Math.random()*16)+"s";
+  const z=2+Math.random()*4; f.style.width=f.style.height=z+"px"; s.appendChild(f);} })();
+
+window.addEventListener("hashchange", render);
+render();
+</script>
+</body>
+</html>
